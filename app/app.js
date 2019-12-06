@@ -1,6 +1,7 @@
 'use strict';
 
 const Koa = require('koa');
+const sockjs = require('sockjs');
 const logging = require('@kasa/koa-logging');
 const requestId = require('@kasa/koa-request-id');
 const apmMiddleware = require('./middlewares/apm');
@@ -9,8 +10,8 @@ const cors = require('./middlewares/cors');
 const errorHandler = require('./middlewares/error-handler');
 const corsConfig = require('./config/cors');
 const logger = require('./logger');
-const router = require('./routes');
-
+const routerCreator = require('./routes');
+const ChannelPool = require('./connections/websocket/channelPool');
 
 class App extends Koa {
   constructor(...params) {
@@ -22,6 +23,7 @@ class App extends Koa {
     this.silent = this.env !== 'development';
 
     this.servers = [];
+    this.channelPool = new ChannelPool();
 
     this._configureMiddlewares();
     this._configureRoutes();
@@ -31,10 +33,12 @@ class App extends Koa {
     this.use(errorHandler());
     this.use(apmMiddleware());
     this.use(requestId());
-    this.use(logging({
-      logger,
-      overrideSerializers: false
-    }));
+    this.use(
+      logging({
+        logger,
+        overrideSerializers: false
+      })
+    );
     this.use(
       bodyParser({
         enableTypes: ['json'],
@@ -53,12 +57,45 @@ class App extends Koa {
 
   _configureRoutes() {
     // Bootstrap application router
+    const router = routerCreator(this.channelPool);
     this.use(router.routes());
     this.use(router.allowedMethods());
   }
 
+  getWebsocket() {
+    const websocket = sockjs.createServer({
+      sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js'
+    });
+    websocket.on('connection', conn => {
+      const { id: connectionId } = conn;
+      conn.on('data', strMessage => {
+        const message = JSON.parse(strMessage);
+        console.log(strMessage);
+        const { action, channelId } = message;
+        switch (action) {
+          case 'joinChannel':
+            console.log(`joining channel ${channelId}`);
+            this.channelPool.addConnectionToChannel(conn, channelId);
+            break;
+          case 'quitChannel':
+            this.channelPool.removeConnectionFromChannel(connectionId, channelId);
+            break;
+          default:
+            console.log(`broadcasting to ${channelId}`);
+            this.channelPool.broadcastToChannel(channelId, connectionId, message);
+            break;
+        }
+      });
+      conn.on('close', () => {
+        this.channelPool.removeConnectionFromAllChannels(connectionId);
+      });
+    });
+    return websocket;
+  }
+
   listen(...args) {
     const server = super.listen(...args);
+    this.getWebsocket().installHandlers(server, { prefix: '/websocket' });
     this.servers.push(server);
     return server;
   }
