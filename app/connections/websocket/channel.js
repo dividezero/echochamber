@@ -1,6 +1,8 @@
 class Channel {
-  constructor(channelId) {
+  constructor(channelId, game, host) {
     this.channelId = channelId;
+    this.game = game;
+    this.host = host;
     this.connectionList = [];
   }
 

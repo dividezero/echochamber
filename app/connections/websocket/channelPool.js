@@ -5,9 +5,9 @@ class ChannelPool {
     this.channelPool = {};
   }
 
-  addConnectionToChannel(connection, channelId) {
+  addConnectionToChannel(connection, channelId, game) {
     if (!this.channelPool[channelId]) {
-      this.channelPool[channelId] = new Channel(channelId);
+      this.channelPool[channelId] = new Channel(channelId, game);
     }
     this.channelPool[channelId].addConnection(connection);
     return {
@@ -38,11 +38,11 @@ class ChannelPool {
   }
 
   removeConnectionFromAllChannels(connectionId) {
-    for (const channelId of this.channelPool) {
+    Object.keys(this.channelPool).forEach(channelId => {
       if (this.channelPool[channelId].hasConnection(connectionId)) {
         this.removeConnectionFromChannel(connectionId, channelId);
       }
-    }
+    });
     return {
       success: true
     };
