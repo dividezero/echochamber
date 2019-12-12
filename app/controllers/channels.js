@@ -12,15 +12,17 @@ exports.getChannelsListByGame = ({ channelPool }) => ctx => {
   } = ctx;
 
   ctx.body = {
-    channels: Object.keys(
-      channelPool
-        .filter(({ game }) => game === gameName)
-        .map(({ channelId, game, players, connectionList }) => ({
+    channels: Object.keys(channelPool)
+      .filter(channelId => channelPool[channelId].game === gameName)
+      .map(channelId => {
+        const channel = channelPool[channelId];
+        const { host, maxPlayers } = channel;
+        return {
           channelId,
-          game,
-          players,
-          numPlayers: connectionList.length
-        }))
-    )
+          players: channel.getPlayerNames(),
+          host,
+          maxPlayers
+        };
+      })
   };
 };

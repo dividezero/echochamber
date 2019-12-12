@@ -1,28 +1,37 @@
 const Channel = require('./channel');
+const { getDisconnectMessage, getUserConnectMessage } = require('../../messages/general');
 
 class ChannelPool {
   constructor() {
     this.channelPool = {};
   }
 
-  addConnectionToChannel(connection, channelId, game) {
+  addConnectionToChannel(connection, channelId, username) {
     if (!this.channelPool[channelId]) {
-      this.channelPool[channelId] = new Channel(channelId, game);
+      throw new Error('Channel doesnt exists');
     }
-    this.channelPool[channelId].addConnection(connection);
-    return {
-      success: true
-    };
+    this.channelPool[channelId].addConnection(connection, username);
+    this.channelPool[channelId].broadcast(getUserConnectMessage(channelId, username));
+  }
+
+  createChannel(connection, channelId, channelOpts, username) {
+    if (this.channelPool[channelId]) {
+      throw new Error('Channel already exists');
+    }
+    this.channelPool[channelId] = new Channel(channelId, { ...channelOpts, host: username });
+    this.channelPool[channelId].addConnection(connection, username);
   }
 
   removeConnectionFromChannel(connectionId, channelId) {
-    if (this.channelPool[channelId] && this.channelPool[channelId].hasConnection(connectionId)) {
-      this.channelPool[channelId].removeConnection(connectionId);
+    const channel = this.channelPool[channelId];
+    if (channel && channel.hasConnection(connectionId)) {
+      const username = channel.getUsername(connectionId);
+      if (username) {
+        channel.broadcast(getDisconnectMessage(channelId, username));
+      }
+      channel.removeConnection(connectionId);
       this._clearChannel(channelId);
     }
-    return {
-      success: true
-    };
   }
 
   _clearChannel(channelId) {
@@ -43,9 +52,6 @@ class ChannelPool {
         this.removeConnectionFromChannel(connectionId, channelId);
       }
     });
-    return {
-      success: true
-    };
   }
 }
 

@@ -10,7 +10,7 @@ const routerCreator = channelPool => {
   router.get('/spec', miscController.getSwaggerSpec);
   router.get('/status', miscController.healthcheck);
   router.get('/channels', channelsController.getChannelsList(channelPool));
-  router.get('/channels/:gameName', channelsController.getChannelsList(channelPool));
+  router.get('/channels/:gameName', channelsController.getChannelsListByGame(channelPool));
   return router;
 };
 

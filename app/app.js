@@ -13,6 +13,8 @@ const logger = require('./logger');
 const routerCreator = require('./routes');
 const ChannelPool = require('./connections/websocket/channelPool');
 
+const { getErrorMessage } = require('./messages/general');
+
 class App extends Koa {
   constructor(...params) {
     super(...params);
@@ -71,19 +73,28 @@ class App extends Koa {
       conn.on('data', strMessage => {
         const message = JSON.parse(strMessage);
         console.log(strMessage);
-        const { action, channelId, game } = message;
-        switch (action) {
-          case 'joinChannel':
-            console.log(`joining channel ${channelId}`);
-            this.channelPool.addConnectionToChannel(conn, channelId, game);
-            break;
-          case 'quitChannel':
-            this.channelPool.removeConnectionFromChannel(connectionId, channelId);
-            break;
-          default:
-            console.log(`broadcasting to ${channelId}`);
-            this.channelPool.broadcastToChannel(channelId, connectionId, message);
-            break;
+        const { action, channelId, username, channelOpts } = message;
+        try {
+          switch (action) {
+            case 'CHANNEL_CREATE':
+              console.log(`creating and joining channel ${channelId}`);
+              this.channelPool.createChannel(conn, channelId, channelOpts, username);
+              break;
+            case 'CHANNEL_JOIN':
+              console.log(`joining channel ${channelId}`);
+              this.channelPool.addConnectionToChannel(conn, channelId, username);
+              break;
+            case 'CHANNEL_LEAVE':
+              this.channelPool.removeConnectionFromChannel(connectionId, channelId);
+              break;
+            default:
+              console.log(`broadcasting to ${channelId}`);
+              this.channelPool.broadcastToChannel(channelId, connectionId, message);
+              break;
+          }
+        } catch (e) {
+          console.error('Error', e);
+          conn.write(JSON.stringify(getErrorMessage(e.message)));
         }
       });
       conn.on('close', () => {
