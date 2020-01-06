@@ -15,7 +15,8 @@ describe('channel', () => {
 
   it('should add new connection', () => {
     const testConn = connection('someId');
-    this.channel.addConnection(testConn);
+    const username = connection('username');
+    this.channel.addConnection(testConn, username);
 
     expect(this.channel.hasConnection(testConn.id)).toBe(true);
   });

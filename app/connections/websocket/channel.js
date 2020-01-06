@@ -4,7 +4,7 @@
  *  - Players count towards maxPlayers, subscribers dont
  */
 class Channel {
-  constructor(channelId, { game, host, maxPlayers }) {
+  constructor(channelId, { game, host, maxPlayers } = {}) {
     this.channelId = channelId;
     this.game = game;
     this.host = host;
