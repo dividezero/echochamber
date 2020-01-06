@@ -68,7 +68,8 @@
     "pino": "^5.13.6",
     "sockjs": "^0.3.19",
     "swagger-jsdoc": "^3.4.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "word-list": "^3.1.0"
   },
   "devDependencies": {
     "codecov": "^3.6.1",

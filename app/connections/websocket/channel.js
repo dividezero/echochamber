@@ -38,6 +38,10 @@ class Channel {
     delete this.connections[connId];
   }
 
+  removeAllConnections() {
+    Object.keys(this.connections).forEach(this.removeConnection);
+  }
+
   getPlayerNames() {
     return Object.keys(this.connections).reduce((acc, connId) => {
       const connection = this.connections[connId];

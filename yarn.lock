@@ -6777,6 +6777,18 @@ union-value@^1.0.0:
     is-extendable "^0.1.1"
     set-value "^2.0.1"
 
+unique-random-array@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/unique-random-array/-/unique-random-array-2.0.0.tgz#9e639b1a9dc141e97350a6fc6f17da4b0717b1ad"
+  integrity sha512-xR87O95fZ7hljw84J8r1YDXrvffPLWN513BNOP4Bv0KcgG5dyEUrHwsvP7mVAOKg4Y80uqRbpUk0GKr8il70qg==
+  dependencies:
+    unique-random "^2.1.0"
+
+unique-random@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/unique-random/-/unique-random-2.1.0.tgz#7a8413da5176d028567168b57125ac5c0cec5c25"
+  integrity sha512-iQ1ZgWac3b8YxGThecQFRQiqgk6xFERRwHZIWeVVsqlbmgCRl0PY13R4mUkodNgctmg5b5odG1nyW/IbOxQTqg==
+
 unique-string@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/unique-string/-/unique-string-1.0.0.tgz#9e1057cca851abb93398f8b33ae187b99caec11a"
@@ -7019,6 +7031,11 @@ widest-line@^2.0.0:
   integrity sha512-Ba5m9/Fa4Xt9eb2ELXt77JxVDV8w7qQrH0zS/TWSJdLyAwQjWoOzpzj5lwVftDz6n/EOu3tNACS84v509qwnJA==
   dependencies:
     string-width "^2.1.1"
+
+word-list@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/word-list/-/word-list-3.1.0.tgz#c73180ce97399758b7aec9658a410508095f12bc"
+  integrity sha512-fm5Wqf3ema+SNTJ/WFMSL/mM4iVM+yBRyEI/KjrJTPPLsn72GbNBBK94vORD7nUc9DxE7r3H2MpuiVtiA9FzDg==
 
 word-wrap@~1.2.3:
   version "1.2.3"

@@ -6,6 +6,13 @@ class ChannelPool {
     this.channelPool = {};
   }
 
+  resetChannelPool() {
+    Object.keys(this.channelPool).forEach(channelId => {
+      this.channelPool[channelId].removeAllConnections();
+      this.clearChannel(channelId);
+    });
+  }
+
   addConnectionToChannel(connection, channelId, username) {
     if (!this.channelPool[channelId]) {
       throw new Error('Channel doesnt exists');
@@ -30,14 +37,17 @@ class ChannelPool {
         channel.broadcast(getDisconnectMessage(channelId, username));
       }
       channel.removeConnection(connectionId);
-      this._clearChannel(channelId);
+      const { connections } = channel;
+      console.log(`length of ${channelId}`, connections.length);
+      console.log('channelConns', connections);
+      if (!connections.length) {
+        this.clearChannel(channelId);
+      }
     }
   }
 
-  _clearChannel(channelId) {
-    if (!Object.keys(this.channelPool[channelId]).length) {
-      delete this.channelPool[channelId];
-    }
+  clearChannel(channelId) {
+    delete this.channelPool[channelId];
   }
 
   broadcastToChannel(channelId, connId, message) {

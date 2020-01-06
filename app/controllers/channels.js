@@ -1,5 +1,24 @@
 'use strict';
 
+exports.resetChannels = channelPool => ctx => {
+  channelPool.resetChannelPool();
+  ctx.body = {
+    success: true,
+    message: 'All channels cleared'
+  };
+};
+
+exports.clearChannel = channelPool => ctx => {
+  const {
+    params: { channelId }
+  } = ctx;
+  channelPool.clearChannel(channelId);
+  ctx.body = {
+    success: true,
+    message: `${channelId} channel cleared`
+  };
+};
+
 exports.getChannelsList = ({ channelPool }) => ctx => {
   ctx.body = {
     channels: Object.keys(channelPool)
