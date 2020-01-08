@@ -46,6 +46,14 @@ class ChannelPool {
     }
   }
 
+  updateChannelStatus(connectionId, channelId, status) {
+    const channel = this.channelPool[channelId];
+    if (channel.host !== channel.getUsername(connectionId)) {
+      throw new Error('User is not channel host');
+    }
+    channel.status = status;
+  }
+
   clearChannel(channelId) {
     delete this.channelPool[channelId];
   }

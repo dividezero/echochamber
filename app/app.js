@@ -73,7 +73,7 @@ class App extends Koa {
       conn.on('data', strMessage => {
         const message = JSON.parse(strMessage);
         console.log(strMessage);
-        const { action, channelId, username, channelOpts } = message;
+        const { action, channelId, username, status, channelOpts } = message;
         try {
           switch (action) {
             case 'CHANNEL_CREATE':
@@ -83,6 +83,10 @@ class App extends Koa {
             case 'CHANNEL_JOIN':
               console.log(`joining channel ${channelId}`);
               this.channelPool.addConnectionToChannel(conn, channelId, username);
+              break;
+            case 'CHANNEL_STATUS':
+              console.log(`updating channel status ${channelId} to ${status}`);
+              this.channelPool.updateChannelStatus(connectionId, channelId, status);
               break;
             case 'CHANNEL_LEAVE':
               this.channelPool.removeConnectionFromChannel(connectionId, channelId);

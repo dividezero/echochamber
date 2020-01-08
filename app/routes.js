@@ -14,6 +14,7 @@ const routerCreator = channelPool => {
   router.get('/channels', channelsController.getChannelsList(channelPool));
   router.get('/channels/clear/:channelId', channelsController.clearChannel(channelPool));
   router.get('/channels/:gameName', channelsController.getChannelsListByGame(channelPool));
+  router.get('/channels/:gameName/:statusQuery', channelsController.getChannelsListByGame(channelPool));
   router.get('/typerShowdown/words/:count', typerSHowdownController.getRandomWords);
   return router;
 };

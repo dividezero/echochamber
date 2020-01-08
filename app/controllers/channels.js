@@ -27,19 +27,21 @@ exports.getChannelsList = ({ channelPool }) => ctx => {
 
 exports.getChannelsListByGame = ({ channelPool }) => ctx => {
   const {
-    params: { gameName }
+    params: { gameName, statusQuery }
   } = ctx;
 
   ctx.body = {
     channels: Object.keys(channelPool)
       .filter(channelId => channelPool[channelId].game === gameName)
+      .filter(channelId => (statusQuery ? channelPool[channelId].status === statusQuery : true))
       .map(channelId => {
         const channel = channelPool[channelId];
-        const { host, maxPlayers } = channel;
+        const { host, maxPlayers, status } = channel;
         return {
           channelId,
           players: channel.getPlayerNames(),
           host,
+          status,
           maxPlayers
         };
       })
