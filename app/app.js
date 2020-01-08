@@ -8,6 +8,7 @@ const apmMiddleware = require('./middlewares/apm');
 const bodyParser = require('./middlewares/body-parser');
 const cors = require('./middlewares/cors');
 const errorHandler = require('./middlewares/error-handler');
+const config = require('./config');
 const corsConfig = require('./config/cors');
 const logger = require('./logger');
 const routerCreator = require('./routes');
@@ -25,7 +26,7 @@ class App extends Koa {
     this.silent = this.env !== 'development';
 
     this.servers = [];
-    this.channelPool = new ChannelPool();
+    this.channelPool = new ChannelPool(config.defaultChannels);
 
     this._configureMiddlewares();
     this._configureRoutes();

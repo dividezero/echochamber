@@ -2,10 +2,15 @@ const Channel = require('./channel');
 const { getDisconnectMessage, getUserConnectMessage } = require('../../messages/general');
 
 class ChannelPool {
-  constructor() {
+  constructor(defaultChannels = []) {
     this.channelPool = {};
+    this.defaultChannels = defaultChannels;
+    this._createDefaultChannels();
   }
 
+  _createDefaultChannels() {
+    this.defaultChannels.map(channel => this.createChannel(null, channel, {}));
+  }
   resetChannelPool() {
     Object.keys(this.channelPool).forEach(channelId => {
       this.channelPool[channelId].removeAllConnections();
@@ -21,12 +26,14 @@ class ChannelPool {
     this.channelPool[channelId].broadcast(getUserConnectMessage(channelId, username));
   }
 
-  createChannel(connection, channelId, channelOpts, username) {
+  createChannel(connection, channelId, channelOpts, username = null) {
     if (this.channelPool[channelId]) {
       throw new Error('Channel already exists');
     }
     this.channelPool[channelId] = new Channel(channelId, { ...channelOpts, host: username });
-    this.channelPool[channelId].addConnection(connection, username);
+    if (connection) {
+      this.channelPool[channelId].addConnection(connection, username);
+    }
   }
 
   removeConnectionFromChannel(connectionId, channelId) {
@@ -38,8 +45,6 @@ class ChannelPool {
       }
       channel.removeConnection(connectionId);
       const { connections } = channel;
-      console.log(`length of ${channelId}`, connections.length);
-      console.log('channelConns', connections);
       if (!connections.length) {
         this.clearChannel(channelId);
       }
@@ -55,7 +60,9 @@ class ChannelPool {
   }
 
   clearChannel(channelId) {
-    delete this.channelPool[channelId];
+    if (!this.defaultChannels.includes(channelId)) {
+      delete this.channelPool[channelId];
+    }
   }
 
   broadcastToChannel(channelId, connId, message) {

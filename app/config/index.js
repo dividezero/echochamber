@@ -2,7 +2,6 @@
 
 const dotenv = require('dotenv');
 
-
 // Load environment variables from .env file
 dotenv.config();
 
@@ -12,15 +11,15 @@ const configs = {
     env,
     name: process.env.APP_NAME || 'koa-rest-api-boilerplate',
     host: process.env.APP_HOST || '0.0.0.0',
-    port: 7070
+    port: 7070,
+    defaultChannels: ['TYPER_SHOWDOWN_CHAT_CHANNEL']
   },
   production: {
     port: process.env.APP_PORT || 7071
   },
-  development: {
-  },
+  development: {},
   test: {
-    port: 7072,
+    port: 7072
   }
 };
 const config = Object.assign(configs.base, configs[env]);
